@@ -1,4 +1,4 @@
-## **Часть 1**  
+## **Часть 1. Информационная модель базы данных кулинарных рецептов.**  
 База данных моих скромных рецептов. Зачем это?
 1) Прикольно. Готовка бывает веселой и прекрасной, особенно если готовит Гордон Рамзи.  
 2) Чтобы в чём-то разобраться, надо: a) своими словами мочь рассказать, b) обдумать основные проблемы – суть дела, c) разобраться, почему основные моменты вообще стали таковыми (т.е. понять причины их появления — "эволюционная ретроспектива") и d) используя имеющиеся знания, закрепить их, реализуя нечто тебе приятное и их включающее.  
@@ -18,166 +18,49 @@
 Мы хотим, чтобы в *таблице шаги готовки* (2) был один унифицированный столбик, отвечающий за физическое взаимодействие с ингредиентом; поэтому создадим **таблицу шагов** (10), в которой будут содержаться все  возможные действия с ингредиентами (эти действия будут получаться по индексам из таблиц *холодная готовка*, *плита*, *духовка* и т.д.). Безусловно, можно было бы не создавать *таблицу шагов* (10) и объединить  её с *шагами готовки* (2), но тогда в последней (2) было бы на 4 столбца больше и снизился бы её "кулинарный" (схематичный) вид.  
 Помимо прочего, у каждого рецепта есть и свой скромный автор, поэтому создадим **таблицу авторов** (11).  
 
-## **Часть 2**  
+## **Часть 2. Краткое описание таблиц и их связей.**  
 Таблицы **духовка** (3), **мультиварка** (5), **плита** (4), **микроволновка** (6), **холодная готовка** (7) одинаковы по строению: содержат первичный ключ и название режима (name_mode). Таблица **шаги** (10) ссылается на первичные ключи вышеописанных таблиц средств готовки (4 внешних ключа) и содержит первичный ключ (step_id). Таблица **авторов** (11), помимо первичного ключа, включает имя автора (name_author). Таблица **рецептов** (9) ссылается на первичный ключ таблицы авторов и также содержит следующие атрибуты: название рецепта (name_recipe), число порций (number_of_servings), первичный ключ (recipe_id) и комментарий к рецепту (description). Таблица **тип ингредиентов** (8) имеет первичный ключ и название типа (name_ingredient_type). Таблица **ингредиенты** (1) ссылается на первичный ключ таблицы тип ингредиентов и включает название ингредиента (name_ingredient). И, напоследок, таблица **шагов готовки** (2) ссылается на первичные ключи трёх таблиц: - ингредиенты, шаги готовки и рецепты. И, помимо первичного ключа, содержит следующие атрибуты: число частей (pieces, может быть как штуками, так и долями, например, 1.5 порции воды на 1 порцию риса), вес в кг (weight_kg), время готовки в минутах (cooking_time_minute), температура (temperature_celcius), уровень духовки снизу (oven_level_from_bottom) и давление (специально для мультиварки).  
   
 Таким образом, получаем следующую архитектуру базы данных (ER-диаграмму):
 ![ER диаграмма базы данных рецептов](https://github.com/Paradise151/My_recipes_database/blob/main/ER%20diagram%20of%20%20recipe%20db.png)
-## **Часть 3**  
-Заметим, что при внесении рецептов код повторяется, также потворы наблюдаются и при заполнении/ редактировании других таблиц. Поэтому логично выделить среди повторов общие части -  шаблоны.  
+## **Часть 3. Шаблоны.**  
 Заметим, что в процессе заполнения таблицы и написания к ней запросов некоторые части кода повторяются. Назовём их шаблонами и выпишем. Жирным обозначим моменты в шаблонах, на которые стоит обратить внимание.
-
-      0.   Шаблон №0 “Выбор индекса”
-            
-Пример 0.1:
-Выбор индекса автора с ФИО 'Каменский А.М.'
-
-SELECT author_id FROM author WHERE name_author  = 'Каменский А.М.'
-
-Шаблон №1 “Вставка строки и индекса”
-
-Пример 1.1: 
-Можно ли вставить “помидор” сразу с типом “овощ”?
-
-INSERT INTO ingredient
-SELECT помидор, ingredient_type_id 
-FROM ingredient_type
-WHERE name_ingredient_type  = 'Овощи'
-
-Пример 1.2: 
-Вставка рецепта  сразу с автором.
-
-INSERT INTO recipe(name_recipe, author_id)
-SELECT Мясо по-французски, author_id
-FROM author
-WHERE name_author  = 'Каменский А.М.'
-
-Пример 1.3
-Вставка рецепта  сразу с автором (второй способ)
-
-INSERT INTO recipe(name_recipe, author_id)
-VALUES
-("Мясо по-французски", 
- (SELECT author_id FROM author WHERE name_author  = 'Каменский А.М.'))
-
-
-Шаблон №2 “Базовая вставка строк”
-
-Пример 2.1:
-Вставка названия режима в таблицу “Духовка”.
-
-INSERT INTO oven
-VALUES
-('Вентиляционный нагрев'),
-('Нижний нагреватель + вентилятор')
-
-Шаблон №3 “Обновление своего атрибута”
-
-Пример: 3.1
-Обновить свой признак, например, комментарий у рецепта.
-
-UPDATE recipe
-SET comment = ‘Обязательно удалите из свинной шеи жир, чтобы блюдо легко можно было жевать и обязательно очистите лук от зелёных слоёв, т.к иначе на них есть плёнка, которую не получится прожевать’
-WHERE name_recipe = “Мясо по-французски”
-
-Пример: 3.2
-Обновить название режима у “холодной готовки”, например, для исправления ошибки.
-
-UPDATE cold_preparation
-SET name_mode = “Мелко нарезать”
-WHERE (name_mode = “мелко нарезать”) OR (cold_preparation_id) = 14
-
-
-Шаблон №4 “Обновление внешнего атрибута”
-
-Пример: 4.1
-Обновить строку, добавив FK. Добавить индекс автора в рецепт, после просто вставки названия рецепта.
-
-UPDATE recipe(author_id)
-SET author_id = (SELECT author_id 
-                             FROM author
-                             WHERE name_author =  'Каменский А.М.')
-
-
-Шаблон №5 “Заполнение таблицы step”
-Вставить в таблицу “Шаги” целиком некоторую таблицу донор, или i-ый  режим, или последний добавленный в таблицу донор режим.
-
-Вставка всей таблицы, например oven
-INSERT INTO step(oven_id)
-SELECT oven_id
-FROM oven
-Вставка строк из некоторого диапазона индексов
-INSERT INTO step(oven_id)
-SELECT oven_id
-FROM oven
-WHERE 11 <= oven_id <= 13
-Вставка последнего значения из таблицы
-INSERT INTO step(oven_id)
-SELECT oven_id
-FROM oven
-WHERE oven_id = (SELECT oven_id
-                                                        FROM oven
-                                                        ORDER BY oven_id DESC
-                                                        LIMIT 1)
-
-6.  Шаблон №6 “Последний элемент таблицы”
-
-SELECT oven_id
-FROM oven
-ORDER BY oven_id DESC
-LIMIT 1
-
-
-
-7. Шаблон №7 “Нахождение нужного режима в таблице step”
-
-Пример 7.1
-Нахождение индекса шага, где в холодной готовке промывают что-то.
-
-SELECT step_id  
- FROM step 
- LEFT JOIN  cold_preparation USING(cold_preparation_id) 
- LEFT JOIN  multicooker USING(multicooker_id)
- LEFT JOIN  microwave USING(microwave_id) 
- LEFT JOIN oven USING(oven_id)
- LEFT JOIN cooktop USING(cooktop_id)
- WHERE cold_preparation.name_mode = “Помыть”
-
-
+В readme.md ограничимся описанием главного шаблона вставки строки рецепта.  
+...    
 8. Шаблон №8 “Заполнение таблицы recipe_steps”
 
-Для заполнения таблицы с точки зрения недопущения ошибок при присваивании атрибуту некоторого значения отлично подходит обновление с указанием какому столбцу какое значение присваивается. 
-Но дабы избежать лишних запросов на обновление, будем сразу все атрибуты в таблицу recipe_steps вставлять.
+Для заполнения таблицы с точки зрения недопущения ошибок при присваивании атрибуту некоторого значения отлично подходит обновление с указанием какому столбцу какое значение присваивается.  
+Но дабы избежать лишних запросов на обновление, будем сразу все атрибуты в таблицу recipe_steps вставлять.  
 
-INSERT INTO recipe_steps(
-    recipe_id,
-    ingredient_id,
-    pieces,
-    weight_kg,
-    step_id,
-    cooking_time_minute,
-    temperature_celcius,
-    oven_level_from_bottom,
-    pressure)
-VALUES
-(
-(SELECT recipe_id FROM recipe WHERE name_recipe = 'Картофель бейби в духовке'),  -- recipe_id
-(SELECT ingredient_id FROM ingredient WHERE name_ingredient  = 'Картофель бейби'),  -- ingredient_id
-NULL,  -- pieces
-NULL,  -- weight_kg
-(SELECT step_id  
- FROM step 
-	 LEFT JOIN  cold_preparation USING(cold_preparation_id) 
-	 LEFT JOIN  multicooker USING(multicooker_id)
-	 LEFT JOIN  microwave USING(microwave_id) 
-	 LEFT JOIN oven USING(oven_id)
-	 LEFT JOIN cooktop USING(cooktop_id)
- WHERE cold_preparation.name_mode = 'Поместить в пакет для запекания'),   -- step_id
-4,  -- cooking_time_minute
-NULL,  -- temperature_celcius
-NULL,  -- oven_level_from_bottom
-NULL  -- pressure
-);
+INSERT INTO recipe_steps(  
+    recipe_id,  
+    ingredient_id,  
+    pieces,  
+    weight_kg,  
+    step_id,  
+    cooking_time_minute,  
+    temperature_celcius,    
+    oven_level_from_bottom,  
+    pressure)  
+VALUES  
+(  
+(SELECT recipe_id FROM recipe WHERE name_recipe = 'Картофель бейби в духовке'),  -- recipe_id  
+(SELECT ingredient_id FROM ingredient WHERE name_ingredient  = 'Картофель бейби'),  -- ingredient_id  
+NULL,  -- pieces  
+NULL,  -- weight_kg  
+(SELECT step_id    
+ FROM step   
+	 LEFT JOIN  cold_preparation USING(cold_preparation_id)  
+	 LEFT JOIN  multicooker USING(multicooker_id)  
+	 LEFT JOIN  microwave USING(microwave_id)  
+	 LEFT JOIN oven USING(oven_id)  
+	 LEFT JOIN cooktop USING(cooktop_id)  
+ WHERE cold_preparation.name_mode = 'Поместить в пакет для запекания'),   -- step_id  
+4,  -- cooking_time_minute  
+NULL,  -- temperature_celcius  
+NULL,  -- oven_level_from_bottom  
+NULL  -- pressure  
+);  
 
 
 
