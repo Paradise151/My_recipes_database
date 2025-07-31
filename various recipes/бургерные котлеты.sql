@@ -24,7 +24,7 @@ VALUES
 	 LEFT JOIN  microwave USING(microwave_id) 
 	 LEFT JOIN oven USING(oven_id)
 	 LEFT JOIN cooktop USING(cooktop_id)
- WHERE cold_preparation.name_mode = 'Положить в ёмкость'),   -- step_id
+ WHERE cold_preparation.name_mode = 'Положить/Налить в миску'),   -- step_id
 2,  -- cooking_time_minute
 NULL,  -- temperature_celcius
 NULL,  -- oven_level_from_bottom
