@@ -80,7 +80,7 @@ VALUES
 (SELECT recipe_id FROM recipe WHERE name_recipe = 'Гречка в мультиварке'),  -- recipe_id
 (SELECT ingredient_id FROM ingredient WHERE name_ingredient  = 'Вода питьевая'),  -- ingredient_id
 1.5,  -- pieces
-0.5,  -- weight_kg
+0.75,  -- weight_kg
 (SELECT step_id  
  FROM step 
  LEFT JOIN  cold_preparation USING(cold_preparation_id) 
@@ -152,9 +152,9 @@ NULL,  -- weight_kg
 	  LEFT JOIN  microwave USING(microwave_id) 
 	  LEFT JOIN oven USING(oven_id)
 	  LEFT JOIN cooktop USING(cooktop_id)
- WHERE multicooker.name_mode = 'Крупы/Рис'),   -- step_id
-10,  -- cooking_time_minute
+ WHERE multicooker.name_mode = 'Варка/Пар'),   -- step_id
+13,  -- cooking_time_minute
 NULL,  -- temperature_celcius
 NULL,  -- oven_level_from_bottom
-5  -- pressure
+3  -- pressure
 );
