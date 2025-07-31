@@ -63,18 +63,18 @@ NULL  -- pressure
 );  
 
 Хорошо, но на одну строку очень много муторного кода, который приходится копировать и заполнять десятки раз. Лучше оформить это в виде функции (процедуры), получающие некоторые параметры, которые в прошлом приходилось перекопировать или искать место и вписывать. Вот что получилось:  
-CALL InsertRecipeStep(
-    'Котлеты из индейки (с хлебом) в духовке',  -- recipe_name
-    'Белый хлеб',                               -- ingredient_name
-    1,                                       -- pieces
-    0.150,                                       -- weight_kg
-    'Положить/Налить в миску',                          -- step_mode
-    1,                                          -- cooking_time
-    NULL,                                       -- temperature
-    NULL,                                       -- oven_level
-    NULL,                                       -- pressure
-    'cold_preparation'                                      -- appliance_type
-);  
+CALL InsertRecipeStep(  
+    'Котлеты из индейки (с хлебом) в духовке',  -- recipe_name  
+    'Белый хлеб',                               -- ingredient_name  
+    1,                                       -- pieces  
+    0.150,                                       -- weight_kg  
+    'Положить/Налить в миску',                          -- step_mode  
+    1,                                          -- cooking_time  
+    NULL,                                       -- temperature  
+    NULL,                                       -- oven_level  
+    NULL,                                       -- pressure  
+    'cold_preparation'                                      -- appliance_type  
+);    
 Круто, очень эстетично и даёт выйгрыш в 17 строк!
 
 
