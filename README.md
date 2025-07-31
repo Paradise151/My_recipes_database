@@ -76,6 +76,7 @@ CALL InsertRecipeStep(
     NULL,                                       -- pressure  
     'cold_preparation'                                      -- appliance_type  
 );    
+
 Круто, очень эстетично и даёт выйгрыш в 17 строк!
 
 
