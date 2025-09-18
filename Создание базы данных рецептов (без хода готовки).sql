@@ -3,8 +3,6 @@
 
 CREATE database my_recipe_database;
 
-
-
 /* №2. Создание таблиц-объектов для базы данных*/
 
 CREATE table ingredient_type(
@@ -148,7 +146,7 @@ VALUES
 'Котлеты с добавлением хлеба вас не подведут и позволят в течении нескольких сытно кушать.'),
 ('Куриная печень в сметанном соусе', 7,
  (SELECT author_id FROM author WHERE name_author  = 'Каменский А.М.'),
- (SELECT dish_type_id FROM dish_type WHERE name_dish_type  = 'Второе блюдо'),
+ (SELECT dish_type_id FROM dish_type WHERE name_dish_type  = 'Основное блюдо'),
  'Ничем не отличается по вкусу от бефстроганов. Кушайте вместе с картофельным пюре.'),
 ('Картофель бейби в духовке', 7,
  (SELECT author_id FROM author WHERE name_author  = 'Каменский А.М.'),
@@ -157,7 +155,11 @@ VALUES
  ('Гречка в мультиварке', 9,
  (SELECT author_id FROM author WHERE name_author  = 'Каменский А.М.'),
  (SELECT dish_type_id FROM dish_type WHERE name_dish_type  = 'Гарнир'),
- 'Если не хотите стоять у плиты или боитесь, что гречка подгорит, то рецепт для вас. Но учтите, что она вероятно переварится.');
+ 'Если не хотите стоять у плиты или боитесь, что гречка подгорит, то рецепт для вас. Но учтите, что она вероятно переварится.'),
+  ('Индейка в хренно-сметанном соусе', 10,
+ (SELECT author_id FROM author WHERE name_author  = 'Каменский А.М.'),
+ (SELECT dish_type_id FROM dish_type WHERE name_dish_type  = 'Основное блюдо'),
+ 'Сочное и пикантное блюдо. Частичное приготовление под фольгой делает индейку сочной, а также даёт хренно-сметанному соусу возможность схватиться. Блюдо позволяет разнообразить приготовление индейки.');
 
 INSERT INTO ingredient_type(name_ingredient_type)
 VALUES
@@ -243,7 +245,11 @@ VALUES
  ('Куриная печень',
  (SELECT ingredient_type_id FROM ingredient_type WHERE name_ingredient_type = 'Субпродукты')),
  ('Картофель бейби',  
- (SELECT ingredient_type_id FROM ingredient_type WHERE name_ingredient_type = 'Овощи'));
+ (SELECT ingredient_type_id FROM ingredient_type WHERE name_ingredient_type = 'Овощи')),
+  ('Грудка индейки',  
+ (SELECT ingredient_type_id FROM ingredient_type WHERE name_ingredient_type = 'Птица')),
+  ('Тёртый хрен',  
+ (SELECT ingredient_type_id FROM ingredient_type WHERE name_ingredient_type = 'Специи'));
  
  
  
@@ -295,7 +301,11 @@ VALUES
 ('Поместить в пакет для запекания'),
 ('Потрясти пакет для запекания'),
 ('Освободить от пакета для запекания'),
-('Разрезать пакет для запекания');
+('Разрезать пакет для запекания'),
+('Положить в стеклянную форму'),
+('Накрыть форму фольгой'),
+('Снять фольгу'),
+('Смазать соусом');
 
 
 INSERT into multicooker(name_mode)
